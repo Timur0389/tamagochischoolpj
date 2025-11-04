@@ -5,159 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pet Playland • Tamagotchi + Mini Games</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #6a5af9;
-            --secondary: #d66efd;
-            --accent: #22d3ee;
-            --success: #22c55e;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --glass: rgba(255,255,255,0.18);
-            --glass-strong: rgba(255,255,255,0.28);
-            --border: rgba(255,255,255,0.35);
-            --shadow: 0 10px 30px rgba(0,0,0,0.18);
-            --text: #0b1020;
-            --muted: #5b6b8b;
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html, body { height: 100%; }
-        body {
-            margin: 0;
-            font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-            color: var(--text);
-            background: radial-gradient(1200px 800px at 10% -10%, #8ec5fc33, transparent),
-                        radial-gradient(900px 700px at 110% 10%, #e0c3fc33, transparent),
-                        linear-gradient(135deg, #2e335a, #1c1b29 60%, #12111b);
-            overflow: hidden;
-        }
-
-        .app {
-            position: relative;
-            max-width: 480px;
-            margin: 0 auto;
-            height: 100dvh;
-            padding: 16px;
-        }
-
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            padding: 14px 16px;
-            border-radius: 18px;
-            background: var(--glass);
-            backdrop-filter: blur(16px) saturate(140%);
-            -webkit-backdrop-filter: blur(16px) saturate(140%);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            color: white;
-        }
-        .title {
-            font-weight: 700;
-            font-size: 18px;
-            letter-spacing: 0.3px;
-        }
-
-        .chip {
-            font-size: 12px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            box-shadow: inset 0 0 0 1px #ffffff22;
-        }
-
-        .glass-card {
-            margin-top: 16px;
-            padding: 18px;
-            border-radius: 18px;
-            background: var(--glass);
-            backdrop-filter: blur(18px) saturate(160%);
-            -webkit-backdrop-filter: blur(18px) saturate(160%);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-        }
-
-        .pet-area {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .pet-shell {
-            grid-column: 1 / -1;
-            position: relative;
-            height: 220px;
-            border-radius: 18px;
-            background: linear-gradient(145deg, #ffffff2b, #ffffff14);
-            border: 1px solid #ffffff33;
-            overflow: hidden;
-        }
-        .pet-bg {
-            position: absolute; inset: 0;
-            background: radial-gradient(400px 200px at 20% 100%, #6a5af955, transparent),
-                        radial-gradient(300px 240px at 100% 0%, #d66efd55, transparent),
-                        radial-gradient(200px 160px at 40% 0%, #22d3ee40, transparent);
-            filter: blur(18px);
-        }
-        .pet {
-            position: absolute;
-            left: 50%; top: 50%; transform: translate(-50%, -50%);
-            width: 140px; height: 140px;
-            border-radius: 24px;
-            background: linear-gradient(160deg, #fff, #eef3ff);
-            border: 1px solid #ffffffcc;
-            box-shadow: 0 10px 30px #00000022, inset 0 0 0 10px #6a5af922;
-            display: grid; place-items: center;
-        }
-        .eyes { display: flex; gap: 18px; }
-        .eye { width: 18px; height: 18px; background: #222; border-radius: 50%; box-shadow: 0 2px 0 #00000050 inset; }
-        .mouth { width: 34px; height: 14px; background: #222; border-radius: 0 0 16px 16px; margin-top: 8px; }
-
-        .stats { display: grid; grid-template-columns: 1fr; gap: 10px; }
-        .stat { background: var(--glass-strong); border: 1px solid var(--border); border-radius: 12px; padding: 10px; }
-        .stat-row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #e6ecff; }
-        .bar { position: relative; height: 10px; border-radius: 999px; background: #ffffff2a; overflow: hidden; margin-top: 6px; }
-        .bar > i { position: absolute; inset: 0; width: var(--v, 50%); background: linear-gradient(90deg, var(--primary), var(--accent)); }
-
-        .actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .btn {
-            appearance: none; border: 0; outline: 0; cursor: pointer;
-            background: linear-gradient(135deg, #ffffffcc, #ffffff66);
-            border: 1px solid var(--border);
-            color: #0b1020; font-weight: 600; font-size: 14px;
-            padding: 12px 10px; border-radius: 12px;
-            box-shadow: var(--shadow);
-            transition: transform .08s ease, filter .2s ease;
-        }
-        .btn:active { transform: translateY(1px) scale(0.995); filter: brightness(0.98); }
-        .btn.primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
-        .btn.success { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
-        .btn.warn { background: linear-gradient(135deg, #f59e0b, #f97316); color: white; }
-
-        .games { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .game-tile { padding: 14px; border-radius: 14px; background: var(--glass-strong); border: 1px solid var(--border); color: #eaf0ff; display: grid; gap: 6px; }
-        .game-tile h4 { margin: 0; font-size: 14px; color: white; }
-        .game-tile p { margin: 0; font-size: 12px; color: #d5defa; }
-
-        .tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 16px; }
-        .tab { text-align: center; padding: 10px; border-radius: 12px; background: var(--glass); border: 1px solid var(--border); color: #eaf0ff; font-weight: 600; cursor: pointer; }
-        .tab.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
-
-        .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; }
-        .modal.active { display: flex; }
-        .modal-backdrop { position: absolute; inset: 0; background: #0b1020bb; backdrop-filter: blur(8px); }
-        .modal-card { position: relative; width: min(100vw - 24px, 520px); height: min(100dvh - 24px, 840px); border-radius: 18px; background: #0f1224; border: 1px solid #ffffff33; box-shadow: var(--shadow); overflow: hidden; }
-        .modal-bar { position: absolute; top: 0; left: 0; right: 0; padding: 10px; display: flex; gap: 8px; }
-        .modal-bar .btn { padding: 10px 12px; border-radius: 10px; color: white; background: linear-gradient(135deg, #ffffff33, #ffffff22); }
-        .modal-title { flex: 1; text-align: center; align-self: center; color: white; font-weight: 700; }
-        .modal-content { position: absolute; inset: 50px 10px 10px 10px; border-radius: 14px; overflow: hidden; background: #0b0f20; border: 1px solid #ffffff22; }
-
-        canvas { display: block; width: 100%; height: 100%; background: radial-gradient(800px 400px at 10% -10%, #6a5af922, transparent), radial-gradient(800px 600px at 110% 10%, #d66efd22, transparent), #060a18; }
-    </style>
+    <link href="style.css" rel="stylesheet">
+    
 </head>
 <body>
     <div class="app">
@@ -234,8 +83,6 @@
             document.getElementById('tab-pet').style.display = isPet ? '' : 'none';
             document.getElementById('tab-games').style.display = isPet ? 'none' : '';
         }));
-
-        // Pet state
         const petState = Object.assign({ happy: 50, last: Date.now() }, storage.get());
         const el = {
             happyBar: document.getElementById('happyBar'), happyVal: document.getElementById('happyVal')
@@ -256,18 +103,12 @@
         }
         setInterval(decay, 1000);
         renderPet();
-
-        // Actions
         function nudge(type, amount) { petState[type] = clamp(petState[type] + amount); renderPet(); storage.set(petState); }
         document.getElementById('btnPlay').addEventListener('click', () => { nudge('happy', +15); openModal('#pongModal'); });
-
-        // Modals
         function openModal(sel) { document.querySelector(sel).classList.add('active'); resizeCanvases(); }
         function closeModal(sel) { document.querySelector(sel).classList.remove('active'); }
         document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeModal(b.getAttribute('data-close'))));
         document.getElementById('openPong').addEventListener('click', () => openModal('#pongModal'));
-
-        // Canvas sizing
         function fitCanvas(canvas) {
             const parent = canvas.parentElement; const r = parent.getBoundingClientRect();
             const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -277,33 +118,25 @@
         }
         function resizeCanvases() { if (pong.running) pong.resize(); }
         window.addEventListener('resize', resizeCanvases);
-
-        // Ping Pong (Player vs AI)
         const pong = (() => {
             const canvas = document.getElementById('pongCanvas');
             let ctx, W, H, raf;
             const state = { ball: { x: 0, y: 0, vx: 4, vy: 4, r: 8 }, p1: { x: 0 }, p2: { x: 0 }, score: [0,0] };
-            const AI_SPEED = 0.15; // AI tracking speed (0-1)
-            const AI_PREDICTION = 0.7; // AI prediction factor
+            const AI_SPEED = 0.01;
+            const AI_PREDICTION = 1;
             
             function resetBall(dir = (Math.random() > 0.5 ? 1 : -1)) {
                 state.ball.x = W/2; state.ball.y = H/2; state.ball.vx = (Math.random()*2+3) * (Math.random()>.5?1:-1); state.ball.vy = (Math.random()*2+3) * dir;
             }
             
             function updateAI() {
-                // AI controls top paddle (p2)
-                // Predict where ball will be when it reaches the paddle
-                if (state.ball.vy < 0) { // Ball moving towards AI
+                if (state.ball.vy < 0) {
                     const timeToReach = (state.ball.y - 16 - 12) / Math.abs(state.ball.vy);
                     const predictedX = state.ball.x + state.ball.vx * timeToReach * AI_PREDICTION;
-                    // Clamp predicted position
                     const targetX = Math.max(45, Math.min(W - 45, predictedX));
-                    // Smoothly move towards target
                     state.p2.x += (targetX - state.p2.x) * AI_SPEED;
-                    // Clamp paddle position
                     state.p2.x = Math.max(45, Math.min(W - 45, state.p2.x));
                 } else {
-                    // If ball moving away, move to center
                     const centerX = W / 2;
                     state.p2.x += (centerX - state.p2.x) * AI_SPEED * 0.3;
                 }
@@ -311,19 +144,14 @@
             
             function draw() {
                 ctx.clearRect(0,0,W,H);
-                // middle line
                 ctx.strokeStyle = '#ffffff33'; ctx.setLineDash([8,10]); ctx.beginPath(); ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.stroke(); ctx.setLineDash([]);
-                // paddles
                 const w=90,h=12, o=16;
                 ctx.fillStyle = '#e8ecff';
                 ctx.fillRect(state.p1.x - w/2, H - o - h, w, h);
-                // AI paddle (top) - slightly different color
                 ctx.fillStyle = '#c8d5ff';
                 ctx.fillRect(state.p2.x - w/2, o, w, h);
-                // ball
                 ctx.fillStyle = '#ffffff';
                 ctx.beginPath(); ctx.arc(state.ball.x, state.ball.y, state.ball.r, 0, Math.PI*2); ctx.fill();
-                // score
                 ctx.fillStyle = '#ffffffcc'; ctx.font = '700 16px Poppins'; ctx.textAlign = 'center';
                 ctx.fillText('AI: ' + state.score[1], W/2, H/2 - 20);
                 ctx.fillText('You: ' + state.score[0], W/2, H/2 + 36);
@@ -331,28 +159,17 @@
             
             function step() {
                 const w=90,h=12, o=16;
-                // Update AI paddle
                 updateAI();
-                
-                // Update ball
                 state.ball.x += state.ball.vx; state.ball.y += state.ball.vy;
-                
-                // side walls
                 if (state.ball.x < state.ball.r || state.ball.x > W - state.ball.r) state.ball.vx *= -1;
-                
-                // top paddle (AI)
                 if (state.ball.y - state.ball.r < o + h && Math.abs(state.ball.x - state.p2.x) < w/2) {
                     state.ball.vy = Math.abs(state.ball.vy);
                     state.ball.vx += (state.ball.x - state.p2.x) * 0.03;
                 }
-                
-                // bottom paddle (Player)
                 if (state.ball.y + state.ball.r > H - o - h && Math.abs(state.ball.x - state.p1.x) < w/2) {
                     state.ball.vy = -Math.abs(state.ball.vy);
                     state.ball.vx += (state.ball.x - state.p1.x) * 0.03;
                 }
-                
-                // score
                 if (state.ball.y < -20) { state.score[0]++; nudge('happy', +2); resetBall(1); }
                 if (state.ball.y > H + 20) { state.score[1]++; nudge('happy', +1); resetBall(-1); }
             }
@@ -366,7 +183,6 @@
                     touches.forEach(t => {
                         const x = (t.clientX - rect.left);
                         const y = (t.clientY - rect.top);
-                        // Only control bottom paddle (player)
                         if (y > rect.height/2) {
                             state.p1.x = Math.max(45, Math.min(W - 45, x));
                         }
@@ -390,5 +206,4 @@
     </script>
 </body>
 </html>
-
 
