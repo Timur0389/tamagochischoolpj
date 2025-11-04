@@ -49,6 +49,16 @@
                     <p>Touch to move your paddle. Play against AI!</p>
                     <button class="btn primary" id="openPong">Play</button>
                 </div>
+                <div class="game-tile">
+                    <h4>Tic‑Tac‑Toe (vs AI)</h4>
+                    <p>Play as X on a 3×3 board. First to 3 wins!</p>
+                    <button class="btn primary" id="openTTT">Play</button>
+                </div>
+                <div class="game-tile">
+                    <h4>Word Chain</h4>
+                    <p>Say a word starting with the last letter of mine.</p>
+                    <button class="btn primary" id="openWord">Play</button>
+                </div>
             </div>
         </section>
     </div>
@@ -63,6 +73,52 @@
                 <button class="btn" id="pongReset">Reset</button>
             </div>
             <div class="modal-content"><canvas id="pongCanvas"></canvas></div>
+        </div>
+    </div>
+
+    <!-- Tic-Tac-Toe Modal -->
+    <div class="modal" id="tttModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card">
+            <div class="modal-bar">
+                <button class="btn" data-close="#tttModal">Close</button>
+                <div class="modal-title">Tic‑Tac‑Toe • vs AI</div>
+                <button class="btn" id="tttReset">Reset</button>
+            </div>
+            <div class="modal-content">
+                <div id="tttBoard" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; padding:10px; height:100%; align-content:center; justify-items:center;">
+                    <button data-i="0" class="btn" style="width:100%; aspect-ratio:1/1; font-size:28px; font-weight:700;"> </button>
+                    <button data-i="1" class="btn" style="width:100%; aspect-ratio:1/1; font-size:28px; font-weight:700;"> </button>
+                    <button data-i="2" class="btn" style="width:100%; aspect-ratio:1/1; font-size:28px; font-weight:700;"> </button>
+                    <button data-i="3" class="btn" style="width:100%; aspect-ratio:1/1; font-size:28px; font-weight:700;"> </button>
+                    <button data-i="4" class="btn" style="width:100%; aspect-ratio:1/1; font-size:28px; font-weight:700;"> </button>
+                    <button data-i="5" class="btn" style="width:100%; aspect-ratio:1/1; font-size:28px; font-weight:700;"> </button>
+                    <button data-i="6" class="btn" style="width:100%; aspect-ratio:1/1; font-size:28px; font-weight:700;"> </button>
+                    <button data-i="7" class="btn" style="width:100%; aspect-ratio:1/1; font-size:28px; font-weight:700;"> </button>
+                    <button data-i="8" class="btn" style="width:100%; aspect-ratio:1/1; font-size:28px; font-weight:700;"> </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Word Chain Modal -->
+    <div class="modal" id="wordModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card">
+            <div class="modal-bar">
+                <button class="btn" data-close="#wordModal">Close</button>
+                <div class="modal-title">Word Chain</div>
+                <button class="btn" id="wordReset">Reset</button>
+            </div>
+            <div class="modal-content" style="display:grid; grid-template-rows: auto auto 1fr; gap:10px; padding:10px;">
+                <div id="wordInfo" style="color:#eaf0ff; padding:8px 10px;">Start the chain with any word.</div>
+                <div style="display:flex; gap:8px; padding:0 10px 10px 10px;">
+                    <input id="wordInput" placeholder="your word" style="flex:1; border-radius:10px; border:1px solid #ffffff33; background:#0b0f20; color:#eaf0ff; padding:10px;" />
+                    <button class="btn primary" id="wordSubmit">Send</button>
+                </div>
+                <div id="wordLog" style="overflow:auto; padding:0 10px 10px 10px; color:#eaf0ff;">
+                </div>
+            </div>
         </div>
     </div>
 
@@ -202,6 +258,97 @@
         document.getElementById('pongModal').addEventListener('transitionend', () => resizeCanvases());
         const obs = new MutationObserver(() => { document.getElementById('pongModal').classList.contains('active') ? pong.start() : pong.stop(); });
         obs.observe(document.getElementById('pongModal'), { attributes: true, attributeFilter: ['class'] });
+
+        // Open other modals
+        document.getElementById('openTTT').addEventListener('click', () => openModal('#tttModal'));
+        document.getElementById('openWord').addEventListener('click', () => openModal('#wordModal'));
+
+        // Tic-Tac-Toe
+        const ttt = (() => {
+            const boardEl = document.getElementById('tttBoard');
+            const cells = Array.from(boardEl.querySelectorAll('button'));
+            let board = Array(9).fill('');
+            let gameOver = false;
+            const lines = [ [0,1,2],[3,4,5],[6,7,8], [0,3,6],[1,4,7],[2,5,8], [0,4,8],[2,4,6] ];
+            function winner(b){
+                for (const [a,c,d] of lines){ if (b[a]&&b[a]===b[c]&&b[a]===b[d]) return b[a]; }
+                return b.every(x=>x)? 'draw' : '';
+            }
+            function render(){ cells.forEach((c,i)=>{ c.textContent = board[i]||' '; c.disabled = !!board[i] || gameOver; }); }
+            function reset(){ board = Array(9).fill(''); gameOver=false; render(); }
+            function bestMove(){
+                // Minimax for small board
+                function score(b, player){
+                    const w = winner(b);
+                    if (w==='O') return 1; if (w==='X') return -1; if (w==='draw') return 0;
+                    const next = player==='X' ? 'O' : 'X';
+                    let best = player==='O' ? -Infinity : Infinity;
+                    for (let i=0;i<9;i++) if (!b[i]){
+                        b[i]=player; const s = score(b, next); b[i]='';
+                        if (player==='O'){ if (s>best) best=s; } else { if (s<best) best=s; }
+                    }
+                    return best;
+                }
+                let move=-1, best=-Infinity;
+                for (let i=0;i<9;i++) if (!board[i]){
+                    board[i]='O'; const s = score(board, 'X'); board[i]='';
+                    if (s>best){ best=s; move=i; }
+                }
+                return move;
+            }
+            cells.forEach(btn=>btn.addEventListener('click', ()=>{
+                const i = +btn.getAttribute('data-i');
+                if (gameOver || board[i]) return;
+                board[i]='X';
+                let w = winner(board); render();
+                if (w){ gameOver=true; return; }
+                const ai = bestMove();
+                if (ai!==-1){ board[ai]='O'; }
+                w = winner(board); render();
+                if (w){ gameOver=true; }
+            }));
+            document.getElementById('tttReset').addEventListener('click', reset);
+            return { reset };
+        })();
+
+        // Word Chain
+        const wordChain = (() => {
+            const log = document.getElementById('wordLog');
+            const info = document.getElementById('wordInfo');
+            const input = document.getElementById('wordInput');
+            const submit = document.getElementById('wordSubmit');
+            const words = new Set();
+            let last = '';
+            const dict = [
+                'apple','eagle','earth','tiger','robot','table','engine','echo','ocean','night','tree','elephant','tea','ant','tunnel','lamp','paper','rose','egg','game','energy','yellow','wolf','fire','rain','nut','top','pen','nose','ear','river','road','door','rat','tap','pot','toy','yarn','nutmeg','grape','elm','mint','tide','ember'
+            ];
+            function logLine(text){ const p=document.createElement('div'); p.textContent=text; log.appendChild(p); log.scrollTop = log.scrollHeight; }
+            function reset(){ words.clear(); last=''; log.textContent=''; info.textContent='Start the chain with any word.'; input.value=''; input.focus(); }
+            function normalize(w){ return (w||'').toLowerCase().replace(/[^a-z]/g,''); }
+            function aiReply(start){
+                const options = dict.filter(w => w.startsWith(start) && !words.has(w));
+                if (options.length===0){ logLine('AI: I give up! You win.'); return; }
+                const pick = options[Math.floor(Math.random()*options.length)];
+                words.add(pick); logLine('AI: ' + pick);
+                last = pick[pick.length-1];
+                info.textContent = 'Your turn — word starting with "' + last + '"';
+            }
+            function submitWord(){
+                let w = normalize(input.value);
+                if (!w) return;
+                if (words.has(w)){ logLine('You repeated a word. Try different.'); input.value=''; return; }
+                if (last && w[0] !== last){ logLine('Must start with ' + last.toUpperCase()); input.value=''; return; }
+                words.add(w); logLine('You: ' + w);
+                last = w[w.length-1];
+                info.textContent = 'AI thinking…';
+                input.value='';
+                setTimeout(()=>aiReply(last), 300);
+            }
+            submit.addEventListener('click', submitWord);
+            input.addEventListener('keydown', (e)=>{ if (e.key==='Enter') submitWord(); });
+            document.getElementById('wordReset').addEventListener('click', reset);
+            return { reset };
+        })();
     </script>
 </body>
 </html>
