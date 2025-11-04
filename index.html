@@ -144,7 +144,7 @@
         };
         function clamp(n) { return Math.max(0, Math.min(100, n)); }
         function renderPet() {
-            el.happyBar.style.setProperty('--v', petState.happy + '%'); el.happyVal.textContent = petState.happy;
+            el.happyBar.style.setProperty('--v', petState.happy + '%'); el.happyVal.textContent = ' ' + Math.round(petState.happy);
         }
         function decay() {
             const now = Date.now();
